@@ -5,7 +5,7 @@ deno_ejsexcel
 
 ### How to use?
 ```ts
-import { readFile, writeFile } from "https://deno.land/std@0.141.0/node/fs/promises.ts";
+import { readFile, writeFile } from "https://deno.land/std@0.142.0/node/fs/promises.ts";
 import { renderExcel } from "../mod.ts";
 
 //获得Excel模板的buffer对象

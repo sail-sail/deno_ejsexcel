@@ -12,19 +12,7 @@ import * as xml2json from "./lib/xml2json/index.js";
 import * as xmldom from "./lib/xmldom/index.js";
 import * as ejs4xlx from "./ejs4xlx.js";
 
-const isType = function (type) {
-  return function (obj) {
-    return Object.prototype.toString.call(obj) === "[object " + type + "]";
-  };
-};
-
-const isObject = isType("Object");
-
-const isString = isType("String");
-
-const isArray = Array.isArray || isType("Array");
-
-const isFunction = isType("Function");
+const DOMParser = xmldom.DOMParser;
 
 function replaceLast(tt, what, replacement) {
   var mthArr, num;
@@ -39,27 +27,25 @@ function replaceLast(tt, what, replacement) {
   });
 };
 
-const DOMParser = xmldom.DOMParser;
-
-function Promise_fromCallback(cb, t) {
-  return function () {
-    var args;
-    args = Array.from(arguments);
-    if (!t) {
-      t = this;
-    }
-    return new Promise(function (resolve, reject) {
-      args.push(function (data) {
-        resolve(data);
-      });
-      if (cb) {
-        cb.apply(t, args);
-      } else {
-        resolve();
-      }
-    });
-  };
-};
+// function Promise_fromCallback(cb, t) {
+//   return function () {
+//     var args;
+//     args = Array.from(arguments);
+//     if (!t) {
+//       t = this;
+//     }
+//     return new Promise(function (resolve, reject) {
+//       args.push(function (data) {
+//         resolve(data);
+//       });
+//       if (cb) {
+//         cb.apply(t, args);
+//       } else {
+//         resolve();
+//       }
+//     });
+//   };
+// };
 
 function Promise_fromStandard(cb, t) {
   return function () {
@@ -243,7 +229,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
   });
   data._img_ = async function(imgOpt, fileName, rowNum, cellNum) {
     var cNvPrDescr, cNvPrName, cfileName, doc, documentElement, drawingBuf, drawingEl, drawingObj, drawingRId, drawingRelBuf, drawingRelObj, drawingRelStr, drawingStr, entryImgTmp, entryTmp, eny, err, hashMd5, imgBaseName, imgBuf, imgPh, itHs, len2, len3, len4, len5, len6, len7, len8, m, md5Str, n, o, p, q, r, ref3, ref4, ref5, ref6, relationshipEl, relationshipElArr, sei, sheetEntrieRel, sheetEntry, sheetRelPth, shipEl, u, xdr_frt;
-    if (isString(imgOpt) || Buffer.isBuffer(imgOpt)) {
+    if (typeof imgOpt === "string" || Buffer.isBuffer(imgOpt)) {
       imgOpt = {
         imgPh: imgOpt
       };
@@ -264,7 +250,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
     if (!imgPh) {
       return "";
     }
-    if (isString(imgPh)) {
+    if (typeof imgPh === "string") {
       try {
         imgBuf = await readFile(imgPh);
       } catch (error) {
@@ -361,7 +347,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
     drawingRelObj = xml2json.toJson(drawingRelBuf, xjOp);
     if (!drawingRelObj["Relationships"]["Relationship"]) {
       drawingRelObj["Relationships"]["Relationship"] = [];
-    } else if (!isArray(drawingRelObj["Relationships"]["Relationship"])) {
+    } else if (!Array.isArray(drawingRelObj["Relationships"]["Relationship"])) {
       drawingRelObj["Relationships"]["Relationship"] = [drawingRelObj["Relationships"]["Relationship"]];
     }
     itHs = false;
@@ -399,7 +385,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
     drawingObj = xml2json.toJson(drawingBuf, xjOp);
     if (!drawingObj["xdr:wsDr"]["xdr:twoCellAnchor"]) {
       drawingObj["xdr:wsDr"]["xdr:twoCellAnchor"] = [];
-    } else if (!isArray(drawingObj["xdr:wsDr"]["xdr:twoCellAnchor"])) {
+    } else if (!Array.isArray(drawingObj["xdr:wsDr"]["xdr:twoCellAnchor"])) {
       drawingObj["xdr:wsDr"]["xdr:twoCellAnchor"] = [drawingObj["xdr:wsDr"]["xdr:twoCellAnchor"]];
     }
     if (xdr_frt === void 0) {
@@ -777,7 +763,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
         }
       };
       xjOpTmp.sanitizeFn = function (value) {
-        if (!isString(value)) {
+        if (typeof value !== "string") {
           return value;
         }
         if (sheetDataElementState === "start") {
@@ -802,13 +788,13 @@ export async function renderExcel(exlBuf, _data_, opt) {
       sheetObj = xml2json.toJson(sheetBuf, xjOpTmp);
       if (sheetObj.worksheet.sheetData.row === void 0) {
         continue;
-      } else if (!isArray(sheetObj.worksheet.sheetData.row)) {
+      } else if (!Array.isArray(sheetObj.worksheet.sheetData.row)) {
         sheetObj.worksheet.sheetData.row = [sheetObj.worksheet.sheetData.row];
       }
       if (sheetObj.worksheet.mergeCells !== void 0 && sheetObj.worksheet.mergeCells.mergeCell !== void 0) {
         if (!sheetObj.worksheet.mergeCells.mergeCell) {
           sheetObj.worksheet.mergeCells.mergeCell = [];
-        } else if (!isArray(sheetObj.worksheet.mergeCells.mergeCell)) {
+        } else if (!Array.isArray(sheetObj.worksheet.mergeCells.mergeCell)) {
           sheetObj.worksheet.mergeCells.mergeCell = [sheetObj.worksheet.mergeCells.mergeCell];
         }
       }
@@ -818,7 +804,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
         if (row.c !== void 0) {
           if (!row.c) {
             row.c = [];
-          } else if (!isArray(row.c)) {
+          } else if (!Array.isArray(row.c)) {
             row.c = [row.c];
           }
           ref6 = row.c;
@@ -827,7 +813,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
             if (cItem.t === "s" && cItem.v && !isNaN(Number(cItem.v["$t"])) && !cItem.f) {
               if (!shsObj.sst.si) {
                 shsObj.sst.si = [];
-              } else if (!isArray(shsObj.sst.si)) {
+              } else if (!Array.isArray(shsObj.sst.si)) {
                 shsObj.sst.si = [shsObj.sst.si];
               }
               si = shsObj.sst.si[cItem.v["$t"]];
@@ -840,7 +826,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
               if (si.r !== void 0) {
                 if (!si.r) {
                   si.r = [];
-                } else if (!isArray(si.r)) {
+                } else if (!Array.isArray(si.r)) {
                   si.r = [si.r];
                 }
                 ref7 = si.r;
@@ -915,7 +901,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
             }
             if (sheetObj.worksheet.hyperlinks && sheetObj.worksheet.hyperlinks.hyperlink) {
               mciNumArr = [];
-              if (!isArray(sheetObj.worksheet.hyperlinks.hyperlink)) {
+              if (!Array.isArray(sheetObj.worksheet.hyperlinks.hyperlink)) {
                 sheetObj.worksheet.hyperlinks.hyperlink = [sheetObj.worksheet.hyperlinks.hyperlink];
               }
               ref9 = sheetObj.worksheet.hyperlinks.hyperlink;
@@ -1027,7 +1013,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
 
 function str2Xml(str) {
   var i, l, ref2, s, str2;
-  if (!isString(str)) {
+  if (typeof str !== "string") {
     return str;
   }
   str2 = "";

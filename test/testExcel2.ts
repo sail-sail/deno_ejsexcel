@@ -1,8 +1,7 @@
-import { readFile, writeFile } from "https://deno.land/std@0.141.0/node/fs/promises.ts";
 import { renderExcel } from "../mod.ts";
 
 //获得Excel模板的buffer对象
-const exlBuf = await readFile("./test/report.xlsx");
+const exlBuf = await Deno.readFile("./test/report.xlsx");
 //数据源
 const data = [
 	[{
@@ -23,6 +22,6 @@ const data = [
 ];
 //用数据源(对象)data渲染Excel模板
 const exlBuf2 = await renderExcel(exlBuf, data);
-await writeFile("./test/report2.xlsx", exlBuf2);
+await Deno.writeFile("./test/report2.xlsx", exlBuf2);
 console.log("生成report2.xlsx");
 

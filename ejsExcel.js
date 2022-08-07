@@ -1,10 +1,10 @@
 // deno-lint-ignore-file
 import {
   Buffer,
-  readFile,
   path,
   zlib,
   crypto,
+  encodeBase64,
 } from "./deps.ts";
 import * as qr from "./lib/qr-image/index.js";
 import { Hzip } from "./lib/hzip/index.js";
@@ -228,8 +228,8 @@ export async function renderExcel(exlBuf, _data_, opt) {
     return arg0.fileName > arg1.fileName;
   });
   data._img_ = async function(imgOpt, fileName, rowNum, cellNum) {
-    var cNvPrDescr, cNvPrName, cfileName, doc, documentElement, drawingBuf, drawingEl, drawingObj, drawingRId, drawingRelBuf, drawingRelObj, drawingRelStr, drawingStr, entryImgTmp, entryTmp, eny, err, hashMd5, imgBaseName, imgBuf, imgPh, itHs, len2, len3, len4, len5, len6, len7, len8, m, md5Str, n, o, p, q, r, ref3, ref4, ref5, ref6, relationshipEl, relationshipElArr, sei, sheetEntrieRel, sheetEntry, sheetRelPth, shipEl, u, xdr_frt;
-    if (typeof imgOpt === "string" || Buffer.isBuffer(imgOpt)) {
+    var cNvPrDescr, cNvPrName, cfileName, doc, documentElement, drawingBuf, drawingEl, drawingObj, drawingRId, drawingRelBuf, drawingRelObj, drawingRelStr, drawingStr, entryImgTmp, entryTmp, eny, err, imgBaseName, imgBuf, imgPh, itHs, len2, len3, len4, len5, len6, len7, len8, m, md5Str, n, o, p, q, r, ref3, ref4, ref5, ref6, relationshipEl, relationshipElArr, sei, sheetEntrieRel, sheetEntry, sheetRelPth, shipEl, u, xdr_frt;
+    if (typeof imgOpt === "string" || Buffer.isBuffer(imgOpt) || imgOpt instanceof Uint8Array || imgOpt instanceof ArrayBuffer) {
       imgOpt = {
         imgPh: imgOpt
       };
@@ -251,21 +251,12 @@ export async function renderExcel(exlBuf, _data_, opt) {
       return "";
     }
     if (typeof imgPh === "string") {
-      try {
-        imgBuf = await readFile(imgPh);
-      } catch (error) {
-        err = error;
-        return "";
-      }
+      imgBuf = await Deno.readFile(imgPh);
       imgBaseName = path.basename(imgPh);
-    } else if (Buffer.isBuffer(imgPh)) {
-      imgBuf = imgPh;
     } else {
-      return "";
+      imgBuf = imgPh;
     }
-    hashMd5 = crypto.createHash("md5");
-    md5Str = hashMd5.update(imgBuf).digest("hex");
-    md5Str = "a" + md5Str;
+    md5Str = "a" + crypto.randomUUID();
     if (!imgBaseName) {
       imgBaseName = md5Str + ".png";
     }
@@ -663,7 +654,7 @@ export async function renderExcel(exlBuf, _data_, opt) {
   for (i = m = 0, len2 = sheetEntries.length; m < len2; i = ++m) {
     entry = sheetEntries[i];
     //缓存
-    var md5Str2 = "4"+crypto.createHash("md5").update(entry.cfile).digest("hex");
+    var md5Str2 = "4"+encodeBase64(crypto.subtle.digest("SHA-256", entry.cfile));
     str2 = undefined
     if(opt && opt.cache !== false) {
       try {

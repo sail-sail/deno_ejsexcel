@@ -3,7 +3,6 @@ import {
   Buffer,
   path,
   zlib,
-  crypto,
   encodeBase64,
 } from "./deps.ts";
 import * as qr from "./lib/qr-image/index.js";

@@ -83,3 +83,4 @@ deno run --allow-env=NODE_DEBUG --allow-read --allow-write ./test/testExcel2.ts
 - @zzzzzzzz  ¥50
 - @zzzzzzzz  ¥30
 - @九尾之狐  ¥66.66
+- @亲眼 ¥6.66
